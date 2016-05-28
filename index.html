@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>自定义指令选项卡</title>
+    </head>
+     <script type="text/javascript" src="http://libs.baidu.com/jquery/2.0.0/jquery.js"></script>
+    <script type="text/javascript" src="angular.js"></script>
+   
+    <style type="text/css">
+       section{
+       	 margin-bottom:20px;
+       }
+       div{
+        	width:200px;
+        	height:200px;
+        	line-height:200px;
+        	border:1px solid #ccc;
+        	display:none;
+        	text-align:center;
+        	font-size:30px;
+        	margin-top:10px;
+        }
+        .active{
+        	background-color:blue;
+        }
+        .show{
+        	display:block;
+        }
+    </style>
+    <body ng-app="myApp" ng-controller="Aaa">
+    	<my-tab my-id="div1" my-data="data1"></my-tab>
+    	<my-tab my-id="div2" my-data="data2"></my-tab>
+    	<!-- <my-tab ng-init="name='word'"></my-tab>   -->
+    	<!-- 从内到外ng-init优先级高 -->
+    </body>
+    <script type="text/javascript">
+        var m1=angular.module('myApp',[]);
+        m1.directive('myTab',function(){//自定义指令my-tab
+         	// return {
+         	// 	restrict:'AECM',
+         	// 	replace:true, 
+         	// 	scope:true,   //独立作用域
+         	// 	template:' <div id="box">\
+				      //   	<input class="active" type="button" value="1" />\
+				      //   	<input type="button" value="2" />\
+				      //   	<input type="button" value="3" />\
+				      //   	<div style="display:block">{{name}}</div>\
+				      //   	<div>222222</div>\
+				      //   	<div>333333</div>\
+				      //   </div> '
+         	// }
+	     	return {
+	     		// restrict:'AECM',
+	     		restrict:'E',
+	     		replace:true, 
+	     		scope:{
+                    myId:"@",
+                    myData:"="
+	     		},   //隔离作用域
+	     		template:' <section id="{{myId}}">\
+	     		              <input ng-repeat="data in myData" type="button" ng-value="data.title" ng-class="{active:$first}" />\
+	     		              <div ng-repeat="data in myData" ng-class="{show:$first}">{{data.content}}</div>\
+	     		          </section>',
+	     		controller:['$scope',function($scope){
+	     			$scope.name = 'miaov';
+	     		}],
+	     		link:function(scope,element,attr){
+	     			// console.log(scope.name);
+	     			// console.log(element);
+	     			// console.log(attr);
+	     			element.delegate('input','click',function(){
+	     				$(this).attr('class','active').siblings('input').attr('class','');
+	     				$(this).parent().find('div').eq($(this).index()).attr('class','show').siblings('div').attr('class','');
+	     			})
+	     		}
+	     	}	     	
+        });
+        m1.controller('Aaa',["$scope",function($scope){
+             $scope.data1=[
+                 {title:'数学',content:'111111'},
+                 {title:'语文',content:'222222'},
+                 {title:'英语',content:'333333'}
+             ];
+             $scope.data2=[
+                 {title:'前端开发',content:'4444444'},
+                 {title:'物理',content:'555555'},
+                 {title:'计算机',content:'66666'}
+             ];
+        }])
+    </script>
+</html>
